@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quà Bình An</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@1,500;1,600&family=Sriracha&display=swap&subset=vietnamese" rel="stylesheet">
+<script src="loichuc-noel.js"></script>
+<script src="config.js"></script>
+<style>
+:root{--bg1:#0f3d2e;--bg2:#7a1f2b;--gold:#f5d78e;--paper:#fff8ec;--ink:#4a2c1d;--green:#28df2c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:#fff;font-family:'Sriracha','Segoe UI',sans-serif;
+  background:radial-gradient(circle at 50% 0,var(--bg2),var(--bg1) 70%) fixed;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;overflow-x:hidden}
+canvas#snow{position:fixed;inset:0;pointer-events:none}
+main{position:relative;z-index:1;max-width:580px;width:100%}
+h1{position:relative;display:inline-block;font-family:'Dancing Script','Sriracha',cursive;
+  font-size:clamp(2.4rem,9vw,3.8rem);margin:.2em 0;padding:0 .3em;
+  background:linear-gradient(100deg,var(--gold) 0%,#fff 25%,#ffb347 50%,#fff 75%,var(--gold) 100%);
+  background-size:250% 100%;-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  filter:drop-shadow(0 2px 10px #0009);animation:shimmer 5s linear infinite}
+@keyframes shimmer{from{background-position:0% 0}to{background-position:-250% 0}}
+h1::before,h1::after{content:"✦";position:absolute;-webkit-text-fill-color:#fff6d6;color:#fff6d6;
+  font-size:.35em;animation:twinkle 2.2s ease-in-out infinite}
+h1::before{top:.1em;left:-.1em}
+h1::after{bottom:.2em;right:-.1em;animation-delay:1.1s;font-size:.28em}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(.6) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(40deg)}}
+@media (prefers-reduced-motion:reduce){h1,h1::before,h1::after{animation:none}}
+.brand{letter-spacing:.2em;text-transform:uppercase;font-size:.6rem;opacity:.8}
+p.tag{opacity:.8;line-height:1.5}
+.btn{font-family:inherit;cursor:pointer;border:2px solid var(--gold);background:#ffffff14;color:#fff;border-radius:18px;padding:16px 22px;font-size:1.05rem;transition:.2s;backdrop-filter:blur(4px)}
+.btn:hover{background:var(--gold);color:var(--ink);transform:translateY(-2px)}
+.choices{display:grid;gap:14px;margin-top:22px}
+.choices .btn{display:flex;flex-direction:column;gap:4px}
+.choices .btn b{font-size:1.2rem}.choices .btn span{font-size:.85rem;opacity:.85}
+.gift{font-size:1.25rem;padding:20px 30px;background:var(--gold);color:var(--ink);animation:pulse 1.8s infinite}
+@keyframes pulse{50%{transform:scale(1.05)}}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.row .btn{padding:10px 16px;font-size:.9rem}
+.overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:20px;z-index:5}
+.overlay.on{display:flex}
+.card{position:relative;max-width:600px;width:100%;padding:34px 28px;border-radius:14px;color:#4a2c1d;border:6px double #8a5a1c;
+  background:radial-gradient(ellipse at 50% 40%,#fffdf3 0%,#fbf1d6 55%,#ecd9a8 100%);
+  box-shadow:inset 0 0 50px #b8892f66,inset 0 0 8px #8a5a1c88,0 10px 40px #000a;animation:pop .5s ease}
+@keyframes pop{from{transform:scale(.6) rotate(-4deg);opacity:0}}
+.verse{font-family:'Playfair Display','Times New Roman',serif;font-style:italic;font-weight:600;font-size:1.6rem;line-height:1.5;margin:0;
+  color:#b80b0b;text-shadow:0 1px 0 #fff8,0 0 1px #8a5a1c66}
+.ref{font-family:'Playfair Display','Times New Roman',serif;font-style:italic;font-size:1rem;color:#9a6a1c;margin:8px 0 16px;letter-spacing:.04em}
+.wish{font-family:'Dancing Script','Sriracha',cursive;font-size:1.55rem;line-height:1.4;margin:0;color:#b80b0b;}
+.card hr{border:0;border-top:1px dashed #b8892f;margin:16px 30px}
+.card .btn{color:var(--ink);border-color:#b8892f;background:#b8892f1a;margin:4px}
+.card .btn:hover{background:#b8892f;color:#fff}
+#music{position:fixed;top:14px;right:14px;z-index:6;padding:10px 14px;border-radius:50px}
+footer{position:relative;z-index:1;margin-top:28px;font-size:.8rem;opacity:.7}
+.hide{display:none}
+body::before{content:"";position:fixed;inset:0;z-index:-1;opacity:0;transition:opacity .6s;
+  background:linear-gradient(#0009,#000a),var(--bg-img,none) center/cover no-repeat}
+body.has-bg::before{opacity:1}
+
+/* ---- Bắt buộc xoay ngang trên điện thoại ---- */
+#rotate{display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;padding:30px;text-align:center;color:#fff;font-family:'Sriracha','Segoe UI',sans-serif;
+  background:radial-gradient(circle at 50% 0,var(--bg2),var(--bg1) 70%)}
+#rotate p{font-size:1.3rem;line-height:1.5;margin:0;color:var(--gold)}
+#rotate small{opacity:.75;max-width:260px;line-height:1.4}
+#rotate .ph{font-size:4rem;animation:turn 2.4s ease-in-out infinite}
+@keyframes turn{0%,20%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+@media (orientation:portrait) and (max-width:600px) and (pointer:coarse){
+  #rotate{display:flex}
+  main,#overlay,#music,canvas#snow{display:none!important}
+  body{overflow:hidden}
+}
+/* ---- Điện thoại nằm ngang: màn hình thấp nên thu gọn để vừa khung ---- */
+@media (orientation:landscape) and (max-height:480px){
+  body{padding:10px;justify-content:flex-start}
+  main{max-width:760px}
+  h1{font-size:2.1rem;margin:.1em 0}
+  p.tag{margin:.3em 0;font-size:.9rem}
+  #chooseTitle{margin:8px 0 0!important;font-size:1.05rem}
+  .choices{grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .choices .btn{padding:10px 14px}
+  .gift{padding:12px 24px}
+  .card{max-height:88vh;overflow:auto;padding:18px 22px}
+  .verse{font-size:1.05rem}.wish{font-size:1.25rem}
+  footer{margin-top:10px}
+}
+</style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<button class="btn" id="music" aria-label="Bật/tắt nhạc">🔇 Bật nhạc</button>
+<audio id="audio" loop preload="auto"></audio>
+<div id="rotate" role="alert">
+  <div class="ph">📱</div>
+  <p>Vui lòng xoay ngang điện thoại<br>để xem nhé 🎄</p>
+  <small>Nếu máy không tự xoay, hãy tắt "Khóa xoay màn hình" trong cài đặt nhanh.</small>
+</div>
+
+<main>
+  
+  <h1 id="headline"></h1>
+  <div class="brand" id="brand"></div>
+  <p class="tag" id="tagline"></p>
+
+  <section id="v-choose">
+    <h2 style="font-weight:400;margin:24px 0 0" id="chooseTitle"></h2>
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <section id="v-receive" class="hide">
+    <p class="tag" id="optLabel" style="font-size:1.2rem"></p>
+    <button class="btn gift" id="giftBtn"></button>
+    <div class="row"><button class="btn" id="backBtn"></button></div>
+  </section>
+  <footer id="footer"></footer>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="card">
+    <p class="wish hide" id="cTo" style="margin-bottom:10px"></p>
+    <p class="verse" id="cVerse"></p>
+    <p class="ref" id="cRef"></p>
+    <hr id="cHr">
+    <p class="wish" id="cWish"></p>
+    <div style="margin-top:22px">
+      <button class="btn" id="againBtn"></button>
+      <button class="btn" id="closeBtn">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const S = window.SITE, $ = id => document.getElementById(id);
+const r = document.documentElement.style;
+Object.entries(S.theme).forEach(([k,v]) => r.setProperty('--'+k, v));
+r.setProperty('--bg-img', S.bgDashboard ? 'url("' + S.bgDashboard + '")' : 'none');
+document.title = S.pageTitle;
+$('brand').textContent = S.brand; $('headline').textContent = S.headline; $('tagline').textContent = S.tagline;
+$('chooseTitle').textContent = S.chooseTitle; $('giftBtn').textContent = S.giftButton;
+$('againBtn').textContent = S.againButton; $('backBtn').textContent = S.backButton;
+
+// ---- Chọn option ----
+S.options.forEach(o => {
+  const b = document.createElement('button'); b.className = 'btn';
+  b.innerHTML = `<b>${o.icon} ${o.label}</b><span>${o.desc}</span>`;
+  b.onclick = () => { location.hash = '#/nhan/' + o.id; };
+  $('choices').appendChild(b);
+});
+
+// ---- Điều hướng bằng hash (không cần server) ----
+let current = null;
+function route() {
+  const m = location.hash.match(/^#\/nhan\/(\w+)/);
+  current = m && S.options.find(o => o.id === m[1]) || null;
+  document.body.classList.add('has-bg');
+  $('v-choose').classList.toggle('hide', !!current);
+  $('v-receive').classList.toggle('hide', !current);
+  $('overlay').classList.remove('on');
+  if (current) $('optLabel').textContent = current.icon + ' ' + current.label;
+}
+addEventListener('hashchange', route); route();
+$('backBtn').onclick = () => { location.hash = '#/'; };
+
+// ---- Rút lời chúc: "túi bốc thăm" - mỗi người không nhận trùng cho đến khi hết túi ----
+function draw(opt) {
+  const key = 'bag-' + S.slug + '-' + opt.id;
+  let bag = [];
+  try { bag = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) {}
+  bag = bag.filter(i => i < opt.wishes.length);
+  if (!bag.length) {
+    bag = opt.wishes.map((_, i) => i);
+    for (let i = bag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
+  }
+  const idx = bag.pop();
+  try { localStorage.setItem(key, JSON.stringify(bag)); } catch (e) {}
+  return idx;
+}
+let last = 0;
+function show(idx) {
+  if (typeof idx !== 'number') idx = draw(current);
+  last = idx; const w = current.wishes[idx];
+  $('cVerse').textContent = w.verse ? '“' + w.verse + '”' : '';
+  $('cRef').textContent = w.ref ? '— ' + w.ref : '';
+  $('cVerse').classList.toggle('hide', !w.verse); $('cRef').classList.toggle('hide', !w.verse);
+  $('cHr').classList.toggle('hide', !w.verse);
+  $('cWish').textContent = w.text;
+  $('overlay').classList.add('on');
+}
+const fresh = () => { $('cTo').classList.add('hide'); show(); };
+$('giftBtn').onclick = fresh; $('againBtn').onclick = fresh;
+$('closeBtn').onclick = () => $('overlay').classList.remove('on');
+
+// ---- Nhạc: tự phát khi mở web; bị chặn thì phát ở lần chạm đầu tiên ----
+const a = $('audio'), mb = $('music');
+a.src = S.music; a.volume = .5;
+let userMuted = false;                       // true khi người dùng tự bấm tắt
+const setBtn = on => mb.textContent = on ? '🔊' : '🔇';
+const portraitPhone = matchMedia('(orientation:portrait) and (max-width:600px) and (pointer:coarse)');
+portraitPhone.addEventListener('change', e => {
+  if (e.matches) { a.pause(); }                 // đang dọc: dừng nhạc
+  else if (!userMuted) { tryPlay(); }           // xoay ngang: phát lại nếu người dùng chưa tắt
+});
+const unlockEvents = ['click', 'touchend', 'keydown'];
+function removeUnlock() { unlockEvents.forEach(e => removeEventListener(e, unlock)); }
+function unlock(ev) {
+  if (ev && ev.target && ev.target.closest && ev.target.closest('#music')) return; // để nút nhạc tự xử lý
+  tryPlay();
+}
+function tryPlay() {
+  if (userMuted) return;
+  a.play().then(() => { setBtn(true); removeUnlock(); }).catch(() => setBtn(false));
+}
+unlockEvents.forEach(e => addEventListener(e, unlock));
+tryPlay();                                   // thử phát ngay khi vừa mở web
+
+mb.onclick = () => {
+  if (a.paused) {
+    userMuted = false;
+    a.play().then(() => { setBtn(true); removeUnlock(); })
+            .catch(() => mb.textContent = '⚠ Chưa có file nhạc');
+  } else {
+    userMuted = true; a.pause(); setBtn(false); removeUnlock();   // người dùng chủ động tắt
+  }
+};
+
+// ---- Mở link được gửi: hiện đúng lời chúc người gửi chọn ----
+(function () {
+  const q = new URLSearchParams(location.search);
+  const opt = S.options.find(o => o.id === q.get('o')), i = parseInt(q.get('i'), 10);
+  if (!opt || !(i >= 0 && i < opt.wishes.length)) return;
+  history.replaceState(null, '', location.pathname + '#/nhan/' + opt.id);
+  route();
+  const ten = (q.get('ten') || '').slice(0, 40);
+  $('cTo').textContent = ten ? 'Gửi ' + ten + ',' : '';
+  $('cTo').classList.toggle('hide', !ten);
+  show(i);
+})();
+
+// ---- Tuyết rơi ----
+const cv = $('snow'), c = cv.getContext('2d'); let fl = [];
+function size() { cv.width = innerWidth; cv.height = innerHeight; } size(); addEventListener('resize', size);
+for (let i = 0; i < 70; i++) fl.push({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: Math.random() * 3 + 1, s: Math.random() + .5 });
+(function loop() {
+  c.clearRect(0, 0, cv.width, cv.height); c.fillStyle = '#ffffffcc';
+  fl.forEach(f => { f.y += f.s; f.x += Math.sin(f.y / 40) * .4; if (f.y > cv.height) { f.y = -5; f.x = Math.random() * cv.width; } c.beginPath(); c.arc(f.x, f.y, f.r, 0, 7); c.fill(); });
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
