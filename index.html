@@ -16,7 +16,7 @@ body{margin:0;min-height:100vh;color:#fff;font-family:'Sriracha','Segoe UI',sans
 canvas#snow{position:fixed;inset:0;pointer-events:none}
 main{position:relative;z-index:1;max-width:580px;width:100%}
 h1{position:relative;display:inline-block;font-family:'Dancing Script','Sriracha',cursive;
-  font-size:clamp(2.4rem,9vw,3.8rem);margin:.2em 0;padding:0 .3em;
+  font-size:clamp(2.3rem,9vw,3.8rem);margin:.2em 0;padding:0 .3em;
   background:linear-gradient(100deg,var(--gold) 0%,#fff 25%,#ffb347 50%,#fff 75%,var(--gold) 100%);
   background-size:250% 100%;-webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;color:transparent;
@@ -59,44 +59,17 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;opacity:0;transition:o
   background:linear-gradient(#0009,#000a),var(--bg-img,none) center/cover no-repeat}
 body.has-bg::before{opacity:1}
 
-/* ---- Bắt buộc xoay ngang trên điện thoại ---- */
-#rotate{display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;align-items:center;justify-content:center;
-  gap:14px;padding:30px;text-align:center;color:#fff;font-family:'Sriracha','Segoe UI',sans-serif;
-  background:radial-gradient(circle at 50% 0,var(--bg2),var(--bg1) 70%)}
-#rotate p{font-size:1.3rem;line-height:1.5;margin:0;color:var(--gold)}
-#rotate small{opacity:.75;max-width:260px;line-height:1.4}
-#rotate .ph{font-size:4rem;animation:turn 2.4s ease-in-out infinite}
-@keyframes turn{0%,20%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
-@media (orientation:portrait) and (max-width:600px) and (pointer:coarse){
-  #rotate{display:flex}
-  main,#overlay,#music,canvas#snow{display:none!important}
-  body{overflow:hidden}
-}
-/* ---- Điện thoại nằm ngang: màn hình thấp nên thu gọn để vừa khung ---- */
-@media (orientation:landscape) and (max-height:480px){
-  body{padding:10px;justify-content:flex-start}
-  main{max-width:760px}
-  h1{font-size:2.1rem;margin:.1em 0}
-  p.tag{margin:.3em 0;font-size:.9rem}
-  #chooseTitle{margin:8px 0 0!important;font-size:1.05rem}
-  .choices{grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-  .choices .btn{padding:10px 14px}
-  .gift{padding:12px 24px}
-  .card{max-height:88vh;overflow:auto;padding:18px 22px}
-  .verse{font-size:1.05rem}.wish{font-size:1.25rem}
-  footer{margin-top:10px}
-}
 </style>
 </head>
 <body>
 <canvas id="snow"></canvas>
 <button class="btn" id="music" aria-label="Bật/tắt nhạc">🔇 Bật nhạc</button>
 <audio id="audio" loop preload="auto"></audio>
-<div id="rotate" role="alert">
+<!--<div id="rotate" role="alert">
   <div class="ph">📱</div>
   <p>Vui lòng xoay ngang điện thoại<br>để xem nhé 🎄</p>
   <small>Nếu máy không tự xoay, hãy tắt "Khóa xoay màn hình" trong cài đặt nhanh.</small>
-</div>
+</div>-->
 
 <main>
   
@@ -197,11 +170,7 @@ const a = $('audio'), mb = $('music');
 a.src = S.music; a.volume = .5;
 let userMuted = false;                       // true khi người dùng tự bấm tắt
 const setBtn = on => mb.textContent = on ? '🔊' : '🔇';
-const portraitPhone = matchMedia('(orientation:portrait) and (max-width:600px) and (pointer:coarse)');
-portraitPhone.addEventListener('change', e => {
-  if (e.matches) { a.pause(); }                 // đang dọc: dừng nhạc
-  else if (!userMuted) { tryPlay(); }           // xoay ngang: phát lại nếu người dùng chưa tắt
-});
+
 const unlockEvents = ['click', 'touchend', 'keydown'];
 function removeUnlock() { unlockEvents.forEach(e => removeEventListener(e, unlock)); }
 function unlock(ev) {
